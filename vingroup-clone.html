@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<title>Trang chủ - Tập đoàn Vingroup (layout clone)</title>
+<style>
+  :root{
+    --navy:#0b2a4a; --blue:#1a4a7a; --red:#d1303b; --ink:#1b1f24; --muted:#5b6672;
+    --line:#e3e7ec; --bg:#fff; --soft:#f4f6f9; --side:92px;
+    --font:"Helvetica Neue",Arial,sans-serif;
+    --cond:"Barlow Condensed","Roboto Condensed","Arial Narrow",Impact,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{padding-left:var(--side);font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  ul{list-style:none}
+  img{max-width:100%}
+
+  /* ---------- Left sidebar ---------- */
+  .side{position:fixed;top:0;left:0;bottom:0;width:var(--side);background:#fff;z-index:50;
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0 22px}
+  .logo{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--red);
+    font-weight:800;font-style:italic;font-size:12px;letter-spacing:-.2px}
+  .logo i{display:block;width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#ffb62e,#e2362b 70%)}
+  .burger{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:36px;
+    background:none;border:0;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:7px;align-items:center}
+  .burger span{display:block;width:32px;height:2px;background:#4a4f55;transition:transform .25s,opacity .25s}
+  .burger.open span:nth-child(1){transform:translateY(9px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg)}
+  .burger:focus-visible{outline:2px solid var(--red);outline-offset:4px}
+  .side-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:auto}
+  .side-bottom svg{width:28px;height:28px;stroke:#9aa1a8;fill:none;stroke-width:2;cursor:pointer}
+  .lang{font-family:var(--cond);font-size:15px;color:#9aa1a8;cursor:pointer}
+  .lang b{color:var(--red);font-weight:500}
+  .lang em{font-style:normal;color:var(--ink);margin:0 3px}
+  .side-bottom{width:100%}
+  .tip{position:relative;width:100%;display:flex;justify-content:center;outline:none}
+  .tip::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;
+    transform:translateY(-50%) translateX(-6px);white-space:nowrap;background:#1b1f24;color:#fff;
+    font:13px/1 var(--font);padding:9px 12px;border-radius:4px;opacity:0;pointer-events:none;
+    transition:opacity .15s,transform .15s;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .tip::before{content:"";position:absolute;left:calc(100% + 4px);top:50%;transform:translateY(-50%);
+    border:6px solid transparent;border-right-color:#1b1f24;border-left:0;opacity:0;transition:opacity .15s}
+  .tip:hover::after,.tip:focus-visible::after{opacity:1;transform:translateY(-50%)}
+  .tip:hover::before,.tip:focus-visible::before{opacity:1}
+
+  /* ---------- Sidebar open state (red) ---------- */
+  .side{transition:background .3s}
+  .logo{transition:opacity .2s}
+  body.menu-open .side{background:var(--red);box-shadow:0 0 18px rgba(0,0,0,.12)}
+  body.menu-open .logo{opacity:0;pointer-events:none}
+  body.menu-open .burger span{background:#fff;height:1.5px}
+  body.menu-open .side-bottom svg{stroke:#fff}
+  body.menu-open .lang,body.menu-open .lang span{color:rgba(255,255,255,.65)}
+  body.menu-open .lang b{color:#fff}
+  body.menu-open .lang em{color:#fff}
+  body.menu-open{overflow:hidden}
+
+  /* ---------- Full-screen menu ---------- */
+  nav{position:fixed;top:0;left:var(--side);right:0;bottom:0;z-index:40;background:#fff;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;padding:0 0 0 125px;
+    opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+  nav.open{opacity:1;visibility:visible}
+  nav .main{display:flex;flex-direction:column;gap:8px;font-family:var(--cond);font-weight:600;
+    font-size:clamp(24px,2.6vw,34px);text-transform:uppercase;line-height:1.2}
+  nav .main > li > a{display:inline-block;color:#a3a7ab;transition:color .2s}
+  nav .main > li > a:hover,nav .main > li > a.active{color:var(--red)}
+  .sub{max-height:0;overflow:hidden;transition:max-height .3s;display:flex;flex-direction:column;gap:2px;padding-left:2px}
+  nav .main li.expanded .sub{max-height:260px}
+  @media (hover:hover) and (min-width:769px){nav .main li:hover .sub,nav .main li:focus-within .sub{max-height:200px}}
+  .m-tools{display:none}
+  .sub a{font-size:15px;font-weight:400;color:#8b9096;padding:2px 0;letter-spacing:.3px}
+  .sub a:hover{color:var(--red)}
+  nav .small{margin-top:26px;display:flex;flex-direction:column;gap:2px;font-family:var(--cond);
+    font-size:18px;text-transform:uppercase;color:#a3a7ab}
+  nav .small a:hover{color:var(--red)}
+  nav .bird{position:absolute;right:4%;bottom:3%;width:min(34vw,520px);height:auto;pointer-events:none}
+
+  /* ---------- Hero ---------- */
+  .hero{height:100vh;min-height:560px;position:relative;overflow:hidden;color:#fff;
+    background:
+      linear-gradient(180deg,#8fcbef 0%,#bfe2f5 30%,#e3f0f6 46%,#9fb3b6 52%,#6d8a63 60%,#5f8fa3 74%,#7a9fb0 88%,#c9743f 100%)}
+  /* simple skyline + tower placeholders (swap for a photo with background-image) */
+  .hero .blocks{position:absolute;left:38%;right:3%;bottom:26%;height:26%;
+    background:repeating-linear-gradient(90deg,#d9d4cb 0 46px,#bfb8ad 46px 50px);opacity:.9}
+  .hero .tower{position:absolute;right:26%;bottom:26%;width:76px;height:62%;
+    background:linear-gradient(90deg,#2a7f9f,#86d3e8 50%,#2a7f9f);clip-path:polygon(46% 0,54% 0,100% 100%,0 100%)}
+  .hero h1{position:absolute;left:21%;top:56%;font-family:var(--cond);font-weight:600;text-transform:uppercase;
+    font-size:clamp(34px,4.4vw,68px);line-height:1.2;letter-spacing:.5px;text-shadow:0 2px 14px rgba(0,0,0,.25)}
+  .scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-family:var(--cond);font-size:12px;line-height:1.2;text-transform:uppercase;letter-spacing:.5px}
+  /* subtle intro: text fades up, then the arrow fades in and drifts gently */
+  .scroll-text{opacity:0;animation:scrollIn .9s ease-out .8s forwards}
+  .scroll-arrow{width:14px;height:21px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+    opacity:0;animation:scrollIn .7s ease-out 1.5s forwards,arrowDrift 2s ease-in-out 2.3s infinite}
+  @keyframes scrollIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes arrowDrift{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(5px);opacity:.55}}
+  @media (prefers-reduced-motion:reduce){
+    .scroll-text,.scroll-arrow{animation:none;opacity:1}
+  }
+
+  section{padding:90px 4vw}
+  .wrap{max-width:1180px;margin:0 auto}
+  .sec-title{font-family:var(--cond);font-weight:300;font-size:clamp(38px,4.2vw,58px);line-height:1.12;
+    text-transform:uppercase;color:#3a3f45}
+  .sec-title a:hover{color:var(--red)}
+  .sec-title em{font-style:normal;color:var(--red)}
+
+  /* ---------- Scroll reveal (slide in) ---------- */
+  .js .rv{opacity:0;transform:translateY(56px);
+    transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+  .js .rv.from-left{transform:translateX(-64px)}
+  .js .rv.from-right{transform:translateX(96px)}
+  .js .rv.in{opacity:1;transform:none}
+
+  /* ---------- News ---------- */
+  .news{padding:90px 4vw 170px}
+  .news .sec-title{margin-bottom:38px}
+  .news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:35px}
+  .card{display:block}
+  .thumb{aspect-ratio:370/244;background:linear-gradient(135deg,#1c2330,#5f7d3c);overflow:hidden}
+  .card:nth-child(2) .thumb{background:linear-gradient(160deg,#2b3d8f,#5a6fc0 60%,#cfd6ee)}
+  .card:nth-child(3) .thumb{background:linear-gradient(135deg,#4f7a45,#c9a227)}
+  .card h3{font-family:var(--cond);font-weight:600;font-size:21px;line-height:1.15;text-transform:uppercase;
+    color:#2b3037;margin:40px 0 28px}
+  .card:hover h3{color:var(--red)}
+  .card time{font-size:14px;color:#9aa1a8}
+  .view-all{display:inline-flex;align-items:center;gap:14px;margin-top:48px;font-family:var(--cond);
+    font-size:17px;text-transform:uppercase;color:#8b9096}
+  .view-all svg{width:26px;height:12px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;
+    stroke-linejoin:round;transition:transform .25s}
+  .view-all:hover{color:var(--red)}
+  .view-all:hover svg{transform:translateX(5px)}
+
+  /* ---------- Lĩnh vực tiên phong ---------- */
+  /* text and cards share one grid cell: the cards slide over the text and it fades out */
+  .sectors{--pl:max(5vw,calc((100vw - var(--side) - 1180px)/2));background:#f4f4f4;padding:0;
+    display:grid;grid-template-columns:minmax(0,1fr);align-items:start}
+  .sectors-text{grid-area:1/1;z-index:1;padding:57px 0 90px var(--pl);max-width:calc(var(--pl) + 400px);
+    opacity:var(--fade,1);transform:translateX(calc((1 - var(--fade,1)) * -48px));will-change:opacity,transform}
+  .sectors-text p{font-size:16px;line-height:1.4;color:#555;margin:30px 0 54px}
+  .explore{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-left:58px;color:#9aa1a8;
+    font-family:var(--cond);font-size:14px;text-transform:uppercase;letter-spacing:.3px}
+  .explore svg{width:22px;height:34px;stroke:#9aa1a8;fill:none;stroke-width:1.6}
+  .explore span{display:flex;gap:10px;align-items:center;margin-left:-26px}
+  .sector-slider{display:flex;gap:40px;overflow-x:auto;grid-area:1/1;z-index:2;margin-top:-110px;padding:30px 40px 70px calc(var(--pl) + 440px);
+    scrollbar-width:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  .sector-slider::-webkit-scrollbar{display:none}
+  .sector-slider.drag{cursor:grabbing}
+  .sector-slider a{-webkit-user-drag:none}
+  .sector{flex:0 0 469px;display:block;background:#fff;border-top:5px solid var(--red);
+    box-shadow:0 0 30px rgba(0,0,0,.09);padding:98px 48px 48px}
+  .sector .ico{display:flex;align-items:flex-end}
+  .sector .ico svg{width:112px;height:112px;stroke:#9aa1a8;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .sector .ico::after{content:"";flex:1;height:1px;background:#a8adb2;margin-right:-48px}
+  .sector h3{font-family:var(--cond);font-weight:600;font-size:clamp(34px,3.2vw,50px);line-height:1.4;
+    text-transform:uppercase;color:var(--red);margin:26px 0 38px}
+  .sector .pic{aspect-ratio:373/250;background:linear-gradient(135deg,#a9c4d6,#e3edf3 55%,#7da36a)}
+  .sector:nth-child(even) .pic{background:linear-gradient(135deg,#c8d3da,#eef2f4 50%,#8aa7b8)}
+
+  /* ---------- Quan hệ cổ đông ---------- */
+  .ir-sec{padding:100px 4vw 90px;background:#fff}
+  .ir-sec .sec-title{margin-bottom:58px}
+  .ir-tabs{max-width:550px;border-bottom:1px solid #e3e3e3;position:relative;margin-bottom:21px}
+  .ir-tabs::after{content:"";position:absolute;left:0;bottom:-1px;width:100px;height:2px;background:var(--red)}
+  .ir-tabs a{display:inline-block;font-weight:700;font-size:13px;text-transform:uppercase;color:#1b1f24;padding-bottom:14px}
+  .ir-img{max-width:550px;aspect-ratio:550/309;
+    background:linear-gradient(180deg,#3f86c8 0%,#a9d1ee 45%,#b9c9c9 56%,#6b8d57 72%,#2d6a8f 100%)}
+  .ir-text{max-width:550px;margin-top:22px;font-size:16px;line-height:1.4;color:#333}
+
+  /* ---------- Footer ---------- */
+  footer{background:#f5f5f5;color:#333;padding:56px 4vw 0;font-size:15px}
+  .foot{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:630px 275px 1fr;align-items:start}
+  .f-about h4{font-size:16px;font-weight:700;color:#2b3037;margin-bottom:6px}
+  .f-about p{font-size:16px;color:#444}
+  .f-about .connect{margin-top:36px}
+  .f-main,.f-sub{display:flex;flex-direction:column;gap:7px}
+  .f-main a{font-weight:700;color:#2b3037}
+  .f-sub a{color:#555}
+  footer a:hover{color:var(--red)}
+  .foot-bottom{max-width:1180px;margin:14px auto 0;border-top:1px solid #e5e5e5;padding:22px 0 20px;
+    font-size:14px;color:#555}
+
+  /* ---------- Mobile: top bar + dropdown menu ---------- */
+  @media (max-width:768px){
+    :root{--side:0px;--top:60px}
+    body{padding-left:0;padding-top:var(--top)}
+
+    .side{top:0;left:0;right:0;bottom:auto;width:100%;height:var(--top);flex-direction:row;
+      justify-content:space-between;padding:0 8px 0 18px;box-shadow:0 1px 10px rgba(0,0,0,.12)}
+    .logo{flex-direction:row;gap:8px;font-size:17px}
+    .logo i{width:28px;height:28px}
+    .burger{position:static;transform:none;width:48px;height:48px}
+    .burger span{width:26px}
+    .burger.open span:nth-child(1){transform:translateY(8.5px) rotate(45deg)}
+    .burger.open span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg)}
+    .side-bottom{display:none}
+    body.menu-open .logo{opacity:1;pointer-events:auto;color:#fff}
+
+    nav{top:var(--top);left:0;right:0;bottom:0;justify-content:flex-start;padding:26px 24px 30px;
+      overflow-y:auto;transform:translateY(-10px);transition:opacity .25s,transform .25s,visibility .25s}
+    nav.open{transform:none}
+    nav .main{gap:4px;font-size:28px}
+    nav .main > li > a{padding:6px 0}
+    nav .main > li > a.active{color:var(--red)}
+    .sub a{font-size:16px;padding:5px 0}
+    nav .small{font-size:20px;margin-top:20px}
+    nav .bird{width:70vw;right:-8%;bottom:-2%}
+
+    .m-tools{display:flex;gap:26px;align-items:center;margin-top:30px;padding-top:22px;border-top:1px solid #e6e8ea;position:relative;z-index:1}
+    .m-tools .tip{width:auto;justify-content:flex-start}
+    .m-tools .tip svg{width:28px;height:28px;stroke:#9aa1a8;fill:none;stroke-width:2}
+    .m-tools .lang{font-size:18px}
+    .m-tools .tip::after{left:0;top:auto;bottom:calc(100% + 12px);transform:translateY(6px)}
+    .m-tools .tip::before{left:8px;top:auto;bottom:calc(100% + 6px);transform:none;
+      border:6px solid transparent;border-top-color:#1b1f24;border-bottom:0}
+    .m-tools .tip:hover::after,.m-tools .tip:focus::after{opacity:1;transform:none}
+    .m-tools .tip:hover::before,.m-tools .tip:focus::before{opacity:1}
+
+    .hero{height:calc(100svh - var(--top));min-height:480px}
+    .hero .blocks{left:12%;right:0;bottom:24%;height:22%}
+    .hero .tower{right:16%;bottom:24%;width:58px;height:50%}
+    .hero h1{left:6%;right:6%;top:50%;font-size:clamp(30px,9vw,44px)}
+    .scroll{bottom:20px}
+
+    section{padding:56px 5vw}
+    .news{padding:56px 5vw}
+    .news-grid{gap:34px}
+    .card h3{margin:22px 0 14px;font-size:20px}
+    .view-all{margin-top:34px}
+    .sectors{grid-template-columns:1fr}
+    .sectors-text{grid-area:auto;max-width:none;opacity:1;transform:none;padding:48px 5vw 20px}
+    .sectors-text p{margin:22px 0 30px}
+    .explore{padding-left:0}
+    .explore span{margin-left:0}
+    .sector-slider{grid-area:auto;margin-top:0;padding:10px 5vw 56px}
+    .sector{flex-basis:78vw;padding:64px 28px 28px}
+    .sector .ico svg{width:84px;height:84px}
+    .sector .ico::after{margin-right:-28px}
+    .sector h3{font-size:34px;margin:18px 0 26px}
+    .ir-sec{padding:56px 5vw}
+    .ir-sec .sec-title{margin-bottom:34px}
+    footer{padding:40px 5vw 0}
+    .foot{gap:22px}
+    .f-about .connect{margin-top:18px}
+  }
+  @media (max-width:900px){
+    .news-grid,.ir,.foot{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <a class="logo" href="#" aria-label="Vingroup trang chủ"><i></i>VINGROUP</a>
+  <button class="burger" id="menuBtn" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="side-bottom">
+    <div class="tip" tabindex="0" data-tip="nút này k hoạt động lmao">
+      <svg viewBox="0 0 24 24" aria-label="Tìm kiếm" role="img"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
+    </div>
+    <div class="tip" tabindex="0" data-tip="nút này k hoạt động lmao">
+      <div class="lang"><span>EN</span><em>|</em><b>VN</b></div>
+    </div>
+  </div>
+</aside>
+
+<nav id="nav" aria-label="Main">
+  <ul class="main">
+    <li><a class="active" href="#">Trang chủ</a></li>
+    <li><a href="#">Giới thiệu tập đoàn</a></li>
+    <li><a href="#business">Lĩnh vực hoạt động</a>
+      <div class="sub">
+        <a href="#">Công nghệ - Công nghiệp</a>
+        <a href="#">Thương mại Dịch vụ</a>
+        <a href="#">Hạ tầng</a>
+        <a href="#">Năng lượng xanh</a>
+        <a href="#">Văn hóa</a>
+        <a href="#">Doanh nghiệp xã hội</a>
+      </div>
+    </li>
+    <li><a href="#">Phát triển bền vững</a></li>
+    <li><a href="#ir">Quan hệ cổ đông</a></li>
+    <li><a href="#news">Tin tức sự kiện</a></li>
+  </ul>
+  <div class="small"><a href="#">Tuyển dụng</a><a href="#">Liên hệ</a></div>
+  <div class="m-tools">
+    <div class="tip" tabindex="0" data-tip="nút này k hoạt động lmao">
+      <svg viewBox="0 0 24 24" aria-label="Tìm kiếm" role="img"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
+    </div>
+    <div class="tip" tabindex="0" data-tip="nút này k hoạt động lmao">
+      <div class="lang"><span>EN</span><em>|</em><b>VN</b></div>
+    </div>
+  </div>
+  <svg class="bird" viewBox="0 0 600 600" aria-hidden="true">
+    <path fill="#f2f2f2" d="M560 10C330 60 230 180 250 330c10 90 80 190 110 250 20 20 60 10 80-20 60-90 0-180-20-260-20-80 20-220 140-290z"/>
+    <path fill="#f2f2f2" d="M0 300c120-10 250 30 330 140 10 30-30 40-60 30C180 450 80 380 0 300z"/>
+  </svg>
+</nav>
+<script>
+  const nav = document.getElementById('nav');
+  const btn = document.getElementById('menuBtn');
+  function setMenu(open){
+    nav.classList.toggle('open', open);
+    btn.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
+    btn.setAttribute('aria-expanded', open);
+  }
+  btn.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') setMenu(false); });
+  const isMobile = () => window.matchMedia('(max-width:768px)').matches;
+  nav.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if(!a) return;
+    const li = a.closest('li');
+    if(isMobile() && li && li.querySelector('.sub') && !a.closest('.sub')){
+      e.preventDefault();
+      li.classList.toggle('expanded');
+      return;
+    }
+    setMenu(false);
+  });
+  window.addEventListener('resize', () => { if(!isMobile()) nav.querySelectorAll('.expanded').forEach(l => l.classList.remove('expanded')); });
+</script>
+
+<main>
+  <div class="hero">
+    <div class="blocks"></div><div class="tower"></div>
+    <h1>Vì một cuộc sống tốt<br>đẹp hơn cho mọi người</h1>
+    <a class="scroll" href="#news" aria-label="Cuộn xuống">
+      <span class="scroll-text">Cuộn<br>xuống</span>
+      <svg class="scroll-arrow" viewBox="0 0 16 24" aria-hidden="true"><path d="M8 1v20M2 15l6 6 6-6"/></svg>
+    </a>
+  </div>
+
+  <section class="news" id="news">
+    <div class="wrap">
+      <h2 class="sec-title rv"><a href="#">Tin tức sự kiện</a></h2>
+      <div class="news-grid">
+        <a class="card rv" style="--d:.05s" href="#"><div class="thumb"></div>
+          <h3>VinFast đưa xe buýt điện vào thị trường Mỹ, mở rộng hệ sinh thái giao thông xanh</h3><time>06-10-2026</time></a>
+        <a class="card rv" style="--d:.2s" href="#"><div class="thumb"></div>
+          <h3>Vingroup và Alstom hợp tác công nghệ để phát triển tuyến đường sắt đô thị Hà Nội thế hệ mới</h3><time>06-10-2026</time></a>
+        <a class="card rv" style="--d:.35s" href="#"><div class="thumb"></div>
+          <h3>VinAlpha tuyển dụng 15.000 nhân sự cho các đại dự án đô thị trên toàn quốc</h3><time>05-10-2026</time></a>
+      </div>
+      <a class="view-all rv" style="--d:.2s" href="#">Xem tất cả <svg viewBox="0 0 26 12" aria-hidden="true"><path d="M0 6h25M20 1l5 5-5 5"/></svg></a>
+    </div>
+  </section>
+
+  <section class="sectors" id="business">
+    <div class="sectors-text">
+      <h2 class="sec-title rv from-left">Lĩnh vực<br><em>Tiên phong</em></h2>
+      <p class="rv from-left" style="--d:.1s">Với mong muốn đem đến cho thị trường những sản phẩm - dịch vụ theo tiêu chuẩn quốc tế và những trải nghiệm hoàn toàn mới về phong cách sống hiện đại, ở bất cứ lĩnh vực nào Vingroup cũng chứng tỏ vai trò tiên phong, dẫn dắt sự thay đổi xu hướng tiêu dùng.</p>
+      <div class="explore rv from-left" style="--d:.2s">
+        <svg viewBox="0 0 22 34" aria-hidden="true"><rect x="1" y="1" width="20" height="32" rx="10"/><path d="M11 7v7"/></svg>
+        <span>&#8249; Kéo để khám phá &#8250;</span>
+      </div>
+    </div>
+    <div class="sector-slider" tabindex="0" aria-label="Lĩnh vực hoạt động">
+      <a class="sector rv from-right" style="--d:0.00s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="7"/><rect x="18" y="18" width="28" height="28" rx="3"/><path d="M25 18V8M32 18V6M39 18V8M25 46v10M32 46v12M39 46v10M18 25H8M18 32H6M18 39H8M46 25h10M46 32h12M46 39h10"/></svg></div><h3>Công nghệ<br>- Công nghiệp</h3><div class="pic"></div></a>
+      <a class="sector rv from-right" style="--d:0.12s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 56h52M12 56V30h16v26M28 56V10h22v46M34 18h10M34 26h10M34 34h10M34 42h10M17 38h6M17 46h6"/></svg></div><h3>Thương mại<br>Dịch vụ</h3><div class="pic"></div></a>
+      <a class="sector rv from-right" style="--d:0.24s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 44h56M4 52h56M12 20v24M52 20v24M12 20Q32 52 52 20M20 30v14M26 35v9M32 36v8M38 35v9M44 30v14"/></svg></div><h3>Hạ tầng</h3><div class="pic"></div></a>
+      <a class="sector rv from-right" style="--d:0.36s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 52C12 24 30 10 54 10c0 26-14 42-38 42zM12 52l24-24M26 40h10M34 32h8"/></svg></div><h3>Năng lượng<br>xanh</h3><div class="pic"></div></a>
+      <a class="sector rv from-right" style="--d:0.48s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 24L32 10l26 14zM12 24v6h40v-6M17 30v22M27 30v22M37 30v22M47 30v22M8 52h48M12 58h40"/></svg></div><h3>Văn hóa</h3><div class="pic"></div></a>
+      <a class="sector rv from-right" style="--d:0.60s" href="#"><div class="ico"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 54C8 38 10 16 24 14c6 0 8 4 8 6 0-2 2-6 8-6 14 2 16 24-8 40z"/></svg></div><h3>Doanh nghiệp<br>xã hội</h3><div class="pic"></div></a>
+    </div>
+  </section>
+
+  <section class="ir-sec" id="ir">
+    <div class="wrap">
+      <h2 class="sec-title rv"><a href="#">Quan hệ cổ đông</a></h2>
+      <div class="ir-tabs rv" style="--d:.1s"><a href="#">Giới thiệu tập đoàn</a></div>
+      <div class="ir-img rv" style="--d:.2s" role="img" aria-label="Hình minh họa"></div>
+      <p class="ir-text rv" style="--d:.3s">Tiền thân của Vingroup là Tập đoàn Technocom, thành lập năm 1993 tại Ucraina. Đầu những năm 2000, Technocom trở về Việt Nam, tập trung đầu tư vào lĩnh vực du lịch và bất động sản với hai thương hiệu chiến lược ban đầu là Vinpearl và Vincom. Đến tháng 1/2012, công ty CP Vincom và Công ty CP Vinpearl sáp nhập, chính thức hoạt động dưới mô hình Tập đoàn với tên gọi Tập đoàn Vingroup – Công ty CP.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot">
+    <div class="f-about">
+      <h4>Tập đoàn Vingroup (Vingroup JSC)</h4>
+      <p>&copy; Bản quyền Vingroup 2026</p>
+      <p class="connect">Kết nối với chúng tôi:</p>
+    </div>
+    <ul class="f-main">
+      <li><a href="#">Trang chủ</a></li>
+      <li><a href="#">Giới thiệu Tập đoàn</a></li>
+      <li><a href="#">Lĩnh vực hoạt động</a></li>
+      <li><a href="#">Quan hệ cổ đông</a></li>
+      <li><a href="#">Phát triển bền vững</a></li>
+    </ul>
+    <ul class="f-sub">
+      <li><a href="#">Tin tức sự kiện</a></li>
+      <li><a href="#">Tuyển dụng</a></li>
+      <li><a href="#">Liên hệ</a></li>
+    </ul>
+  </div>
+  <div class="foot-bottom"><a href="#">Bảo vệ quyền lợi người tiêu dùng</a></div>
+</footer>
+
+<script>
+  // slide-in on scroll
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:.15, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // smooth drag-to-scroll for the sector cards (mouse); touch uses native swipe
+  const slider = document.querySelector('.sector-slider');
+  const calm = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let down = false, moved = false, startX = 0, startT = 0, lastX = 0, lastTime = 0, vel = 0;
+  let pos = 0, target = 0, raf = null;
+  const maxScroll = () => slider.scrollWidth - slider.clientWidth;
+  const clamp = v => Math.max(0, Math.min(maxScroll(), v));
+
+  // fade the heading text out as the cards slide over it, and back in on the way back
+  const sectorsText = document.querySelector('.sectors-text');
+  const fade = () => {
+    const p = Math.min(1, Math.max(0, slider.scrollLeft / 340));
+    sectorsText.style.setProperty('--fade', (1 - p).toFixed(3));
+  };
+  slider.addEventListener('scroll', fade, {passive:true});
+  fade();
+
+  // stop the browser's native "ghost image" drag on links and pictures
+  slider.querySelectorAll('a').forEach(a => a.draggable = false);
+  slider.addEventListener('dragstart', e => e.preventDefault());
+
+  function tick(){
+    pos += (target - pos) * (calm ? 1 : .14);        // ease toward the target
+    slider.scrollLeft = pos;
+    if(Math.abs(target - pos) < .4){ slider.scrollLeft = pos = target; raf = null; return; }
+    raf = requestAnimationFrame(tick);
+  }
+  const go = () => { if(!raf) raf = requestAnimationFrame(tick); };
+
+  slider.addEventListener('pointerdown', e => {
+    if(e.pointerType !== 'mouse' || e.button !== 0) return;
+    e.preventDefault();
+    cancelAnimationFrame(raf); raf = null;
+    pos = target = slider.scrollLeft;
+    down = true; moved = false; vel = 0;
+    startX = lastX = e.clientX; startT = target; lastTime = performance.now();
+    slider.classList.add('drag');
+  });
+  window.addEventListener('pointermove', e => {
+    if(!down) return;
+    const dx = e.clientX - startX;
+    if(Math.abs(dx) > 4) moved = true;
+    const now = performance.now(), dt = Math.max(1, now - lastTime);
+    vel = .8 * vel + .2 * ((lastX - e.clientX) / dt);   // px per ms
+    lastX = e.clientX; lastTime = now;
+    target = clamp(startT - dx);
+    go();
+  });
+  window.addEventListener('pointerup', () => {
+    if(!down) return;
+    down = false; slider.classList.remove('drag');
+    if(moved && !calm){ target = clamp(target + vel * 260); go(); }   // glide a little after release
+  });
+  slider.addEventListener('click', e => { if(moved){ e.preventDefault(); moved = false; } }, true);
+</script>
+</body>
+</html>
