@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/webp" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,8 +28,7 @@
     display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0 22px}
   .logo{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--red);
     font-weight:800;font-style:italic;font-size:12px;letter-spacing:-.2px}
-  .logo i{display:block;width:30px;height:30px;border-radius:50%;
-    background:radial-gradient(circle at 40% 35%,#ffb62e,#e2362b 70%)}
+  .logo img{display:block;width:76px;height:auto}
   .burger{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:36px;
     background:none;border:0;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:7px;align-items:center}
   .burger span{display:block;width:32px;height:2px;background:#4a4f55;transition:transform .25s,opacity .25s}
@@ -84,18 +84,34 @@
   nav .small a:hover{color:var(--red)}
   nav .bird{position:absolute;right:4%;bottom:3%;width:min(34vw,520px);height:auto;pointer-events:none}
 
+  /* floating popup used by the menu links */
+  .float-tip{position:fixed;z-index:80;left:0;top:0;background:#1b1f24;color:#fff;font:13px/1 var(--font);
+    padding:9px 12px;border-radius:4px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    opacity:0;pointer-events:none;transition:opacity .15s}
+  .float-tip.show{opacity:1}
+  .float-tip.right::before{content:"";position:absolute;left:-6px;top:50%;transform:translateY(-50%);
+    border:6px solid transparent;border-right-color:#1b1f24;border-left:0}
+
   /* ---------- Hero ---------- */
-  .hero{height:100vh;min-height:560px;position:relative;overflow:hidden;color:#fff;
-    background:
-      linear-gradient(180deg,#8fcbef 0%,#bfe2f5 30%,#e3f0f6 46%,#9fb3b6 52%,#6d8a63 60%,#5f8fa3 74%,#7a9fb0 88%,#c9743f 100%)}
-  /* simple skyline + tower placeholders (swap for a photo with background-image) */
-  .hero .blocks{position:absolute;left:38%;right:3%;bottom:26%;height:26%;
-    background:repeating-linear-gradient(90deg,#d9d4cb 0 46px,#bfb8ad 46px 50px);opacity:.9}
-  .hero .tower{position:absolute;right:26%;bottom:26%;width:76px;height:62%;
-    background:linear-gradient(90deg,#2a7f9f,#86d3e8 50%,#2a7f9f);clip-path:polygon(46% 0,54% 0,100% 100%,0 100%)}
-  .hero h1{position:absolute;left:21%;top:56%;font-family:var(--cond);font-weight:600;text-transform:uppercase;
+  .hero{height:100vh;min-height:560px;position:relative;overflow:hidden;color:#fff;background:#5a0f33}
+  /* moving, tilted photo gallery with red-to-maroon gutters */
+  .gallery{position:absolute;inset:0;overflow:hidden;
+    background:linear-gradient(120deg,#d4202f 0%,#a3162f 45%,#5a0f33 100%)}
+  .tilt{position:absolute;left:50%;top:50%;width:165%;height:190%;display:flex;gap:16px;
+    transform:translate(-50%,-50%) rotate(14deg)}
+  .g-col{flex:1;min-width:0;overflow:hidden}
+  .g-track{display:flex;flex-direction:column;will-change:transform;
+    animation:gUp var(--dur,80s) linear var(--delay,0s) infinite}
+  .g-col.down .g-track{animation-name:gDown}
+  .g-tile{flex:none;margin-bottom:16px;height:calc(var(--h) * 1px)}
+  @keyframes gUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  @keyframes gDown{from{transform:translateY(-50%)}to{transform:translateY(0)}}
+  /* keeps the headline readable over the photos */
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(90deg,rgba(26,8,12,.62) 0%,rgba(26,8,12,.2) 70%),rgba(26,8,12,.14)}
+  .hero h1{position:absolute;z-index:3;left:21%;top:56%;font-family:var(--cond);font-weight:600;text-transform:uppercase;
     font-size:clamp(34px,4.4vw,68px);line-height:1.2;letter-spacing:.5px;text-shadow:0 2px 14px rgba(0,0,0,.25)}
-  .scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);text-align:center;
+  .scroll{position:absolute;z-index:3;bottom:26px;left:50%;transform:translateX(-50%);text-align:center;
     display:flex;flex-direction:column;align-items:center;gap:8px;
     font-family:var(--cond);font-size:12px;line-height:1.2;text-transform:uppercase;letter-spacing:.5px}
   /* subtle intro: text fades up, then the arrow fades in and drifts gently */
@@ -128,6 +144,7 @@
   .news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:35px}
   .card{display:block}
   .thumb{aspect-ratio:370/244;background:linear-gradient(135deg,#1c2330,#5f7d3c);overflow:hidden}
+  .thumb img{display:block;width:100%;height:100%;object-fit:cover}
   .card:nth-child(2) .thumb{background:linear-gradient(160deg,#2b3d8f,#5a6fc0 60%,#cfd6ee)}
   .card:nth-child(3) .thumb{background:linear-gradient(135deg,#4f7a45,#c9a227)}
   .card h3{font-family:var(--cond);font-weight:600;font-size:21px;line-height:1.15;text-transform:uppercase;
@@ -164,8 +181,13 @@
   .sector .ico::after{content:"";flex:1;height:1px;background:#a8adb2;margin-right:-48px}
   .sector h3{font-family:var(--cond);font-weight:600;font-size:clamp(34px,3.2vw,50px);line-height:1.4;
     text-transform:uppercase;color:var(--red);margin:26px 0 38px}
-  .sector .pic{aspect-ratio:373/250;background:linear-gradient(135deg,#a9c4d6,#e3edf3 55%,#7da36a)}
-  .sector:nth-child(even) .pic{background:linear-gradient(135deg,#c8d3da,#eef2f4 50%,#8aa7b8)}
+  .sector .pic{aspect-ratio:373/250;background-size:cover;background-position:center;background-repeat:no-repeat;}
+  .sector:nth-child(1) .pic{background-image:url('1.jpg')}
+  .sector:nth-child(2) .pic{background-image:url('2.jpg')}
+  .sector:nth-child(3) .pic{background-image:url('8.jpg')}
+  .sector:nth-child(4) .pic{background-image:url('4.jpg')}
+  .sector:nth-child(5) .pic{background-image:url('5.jpg')}
+  .sector:nth-child(6) .pic{background-image:url('6.jpg')}
 
   /* ---------- Quan hệ cổ đông ---------- */
   .ir-sec{padding:100px 4vw 90px;background:#fff}
@@ -174,7 +196,7 @@
   .ir-tabs::after{content:"";position:absolute;left:0;bottom:-1px;width:100px;height:2px;background:var(--red)}
   .ir-tabs a{display:inline-block;font-weight:700;font-size:13px;text-transform:uppercase;color:#1b1f24;padding-bottom:14px}
   .ir-img{max-width:550px;aspect-ratio:550/309;
-    background:linear-gradient(180deg,#3f86c8 0%,#a9d1ee 45%,#b9c9c9 56%,#6b8d57 72%,#2d6a8f 100%)}
+    background:url('all.jpg') center/cover no-repeat}
   .ir-text{max-width:550px;margin-top:22px;font-size:16px;line-height:1.4;color:#333}
 
   /* ---------- Footer ---------- */
@@ -197,8 +219,8 @@
 
     .side{top:0;left:0;right:0;bottom:auto;width:100%;height:var(--top);flex-direction:row;
       justify-content:space-between;padding:0 8px 0 18px;box-shadow:0 1px 10px rgba(0,0,0,.12)}
-    .logo{flex-direction:row;gap:8px;font-size:17px}
-    .logo i{width:28px;height:28px}
+    .logo{flex-direction:row;gap:8px}
+    .logo img{width:68px}
     .burger{position:static;transform:none;width:48px;height:48px}
     .burger span{width:26px}
     .burger.open span:nth-child(1){transform:translateY(8.5px) rotate(45deg)}
@@ -227,8 +249,6 @@
     .m-tools .tip:hover::before,.m-tools .tip:focus::before{opacity:1}
 
     .hero{height:calc(100svh - var(--top));min-height:480px}
-    .hero .blocks{left:12%;right:0;bottom:24%;height:22%}
-    .hero .tower{right:16%;bottom:24%;width:58px;height:50%}
     .hero h1{left:6%;right:6%;top:50%;font-size:clamp(30px,9vw,44px)}
     .scroll{bottom:20px}
 
@@ -256,13 +276,13 @@
   @media (max-width:900px){
     .news-grid,.ir,.foot{grid-template-columns:1fr}
   }
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .rv{opacity:1;transform:none;transition:none}}
+  @media (prefers-reduced-motion:reduce){.g-track{animation:none}html{scroll-behavior:auto}.js .rv{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
 
 <aside class="side">
-  <a class="logo" href="#" aria-label="Vingroup trang chủ"><i></i>VINGROUP</a>
+  <a class="logo" href="#" aria-label="Vingroup trang chủ"><img src="logo.webp" alt="Vingroup"></a>
   <button class="burger" id="menuBtn" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">
     <span></span><span></span><span></span>
   </button>
@@ -312,6 +332,7 @@
   const nav = document.getElementById('nav');
   const btn = document.getElementById('menuBtn');
   function setMenu(open){
+    if(!open) hideTip();
     nav.classList.toggle('open', open);
     btn.classList.toggle('open', open);
     document.body.classList.toggle('menu-open', open);
@@ -320,23 +341,44 @@
   btn.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') setMenu(false); });
   const isMobile = () => window.matchMedia('(max-width:768px)').matches;
+  // every menu link is a "dead" button: it shows a popup instead of navigating
+  const tipEl = document.createElement('div');
+  tipEl.className = 'float-tip';
+  tipEl.textContent = 'nút này cx k hoạt động lmao';
+  document.body.appendChild(tipEl);
+  let tipTimer;
+  function showTip(a, autoHide){
+    const r = a.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    const fitsRight = r.right + 14 + w < window.innerWidth - 12;
+    tipEl.classList.toggle('right', fitsRight);
+    tipEl.style.left = (fitsRight ? r.right + 14 : Math.max(12, Math.min(r.left, window.innerWidth - 12 - w))) + 'px';
+    tipEl.style.top  = (fitsRight ? r.top + r.height / 2 - h / 2 : r.bottom + 8) + 'px';
+    tipEl.classList.add('show');
+    clearTimeout(tipTimer);
+    if(autoHide) tipTimer = setTimeout(hideTip, 1800);
+  }
+  function hideTip(){ clearTimeout(tipTimer); tipEl.classList.remove('show'); }
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('mouseenter', () => showTip(a));
+    a.addEventListener('mouseleave', hideTip);
+    a.addEventListener('focus', () => showTip(a));
+    a.addEventListener('blur', hideTip);
+  });
+
   nav.addEventListener('click', e => {
     const a = e.target.closest('a');
     if(!a) return;
+    e.preventDefault();                       // nothing navigates
     const li = a.closest('li');
-    if(isMobile() && li && li.querySelector('.sub') && !a.closest('.sub')){
-      e.preventDefault();
-      li.classList.toggle('expanded');
-      return;
-    }
-    setMenu(false);
+    if(isMobile() && li && li.querySelector('.sub') && !a.closest('.sub')) li.classList.toggle('expanded');  // keep the phone submenu usable
+    showTip(a, true);
   });
   window.addEventListener('resize', () => { if(!isMobile()) nav.querySelectorAll('.expanded').forEach(l => l.classList.remove('expanded')); });
 </script>
 
 <main>
   <div class="hero">
-    <div class="blocks"></div><div class="tower"></div>
+    <div class="gallery" aria-hidden="true"><div class="tilt"></div></div>
     <h1>Vì một cuộc sống tốt<br>đẹp hơn cho mọi người</h1>
     <a class="scroll" href="#news" aria-label="Cuộn xuống">
       <span class="scroll-text">Cuộn<br>xuống</span>
@@ -348,12 +390,12 @@
     <div class="wrap">
       <h2 class="sec-title rv"><a href="#">Tin tức sự kiện</a></h2>
       <div class="news-grid">
-        <a class="card rv" style="--d:.05s" href="#"><div class="thumb"></div>
-          <h3>VinFast đưa xe buýt điện vào thị trường Mỹ, mở rộng hệ sinh thái giao thông xanh</h3><time>06-10-2026</time></a>
-        <a class="card rv" style="--d:.2s" href="#"><div class="thumb"></div>
-          <h3>Vingroup và Alstom hợp tác công nghệ để phát triển tuyến đường sắt đô thị Hà Nội thế hệ mới</h3><time>06-10-2026</time></a>
-        <a class="card rv" style="--d:.35s" href="#"><div class="thumb"></div>
-          <h3>VinAlpha tuyển dụng 15.000 nhân sự cho các đại dự án đô thị trên toàn quốc</h3><time>05-10-2026</time></a>
+        <a class="card rv" style="--d:.05s" href="#"><div class="thumb"><img src="headliner1.jpg" alt="Headliner 1"></div>
+          <h3>Muki đã lén xem trộm Điệp thay đồ</h3><time>06-10-2026</time></a>
+        <a class="card rv" style="--d:.2s" href="#"><div class="thumb"><img src="headliner2.jpg" alt="Headliner 2"></div>
+          <h3>Chie Chie liếm vai của Muki, theo lời nói tội phạm "e Muki quá ngon"</h3><time>06-10-2026</time></a>
+        <a class="card rv" style="--d:.35s" href="#"><div class="thumb"><img src="headliner3.jpg" alt="Headliner 3"></div>
+          <h3>Điệp đã bị Muki bắt giữ, bị cáo buộc vi phạm quy định nội bộ (câu này đc viết bởi trí tuệ nhân tạo VinAI)</h3><time>05-10-2026</time></a>
       </div>
       <a class="view-all rv" style="--d:.2s" href="#">Xem tất cả <svg viewBox="0 0 26 12" aria-hidden="true"><path d="M0 6h25M20 1l5 5-5 5"/></svg></a>
     </div>
@@ -362,7 +404,7 @@
   <section class="sectors" id="business">
     <div class="sectors-text">
       <h2 class="sec-title rv from-left">Lĩnh vực<br><em>Tiên phong</em></h2>
-      <p class="rv from-left" style="--d:.1s">Với mong muốn đem đến cho thị trường những sản phẩm - dịch vụ theo tiêu chuẩn quốc tế và những trải nghiệm hoàn toàn mới về phong cách sống hiện đại, ở bất cứ lĩnh vực nào Vingroup cũng chứng tỏ vai trò tiên phong, dẫn dắt sự thay đổi xu hướng tiêu dùng.</p>
+      <p class="rv from-left" style="--d:.1s">Chung tôi không biết chung tôi làm gì, nếu vingroup có thấy web này mong đừng kiện nhé huhu</p>
       <div class="explore rv from-left" style="--d:.2s">
         <svg viewBox="0 0 22 34" aria-hidden="true"><rect x="1" y="1" width="20" height="32" rx="10"/><path d="M11 7v7"/></svg>
         <span>&#8249; Kéo để khám phá &#8250;</span>
@@ -383,7 +425,7 @@
       <h2 class="sec-title rv"><a href="#">Quan hệ cổ đông</a></h2>
       <div class="ir-tabs rv" style="--d:.1s"><a href="#">Giới thiệu tập đoàn</a></div>
       <div class="ir-img rv" style="--d:.2s" role="img" aria-label="Hình minh họa"></div>
-      <p class="ir-text rv" style="--d:.3s">Tiền thân của Vingroup là Tập đoàn Technocom, thành lập năm 1993 tại Ucraina. Đầu những năm 2000, Technocom trở về Việt Nam, tập trung đầu tư vào lĩnh vực du lịch và bất động sản với hai thương hiệu chiến lược ban đầu là Vinpearl và Vincom. Đến tháng 1/2012, công ty CP Vincom và Công ty CP Vinpearl sáp nhập, chính thức hoạt động dưới mô hình Tập đoàn với tên gọi Tập đoàn Vingroup – Công ty CP.</p>
+      <p class="ir-text rv" style="--d:.3s">Chung tôi không biết chung tôi làm gì nma chắc chắn sẽ không làm điều gì sai trái. (câu này đc viết bởi trí tuệ nhân tạo VinAI)</p>
     </div>
   </section>
 </main>
@@ -391,9 +433,9 @@
 <footer>
   <div class="foot">
     <div class="f-about">
-      <h4>Tập đoàn Vingroup (Vingroup JSC)</h4>
-      <p>&copy; Bản quyền Vingroup 2026</p>
-      <p class="connect">Kết nối với chúng tôi:</p>
+      <h4>Tập đoàn Vingroup (chụ sở vingroup 3 đổ xuống)</h4>
+      <p>&copy; Bản quyền Vingroup 2026 fake</p>
+      <p class="connect">Đừng kết nối với chúng tôi:</p>
     </div>
     <ul class="f-main">
       <li><a href="#">Trang chủ</a></li>
@@ -408,10 +450,44 @@
       <li><a href="#">Liên hệ</a></li>
     </ul>
   </div>
-  <div class="foot-bottom"><a href="#">Bảo vệ quyền lợi người tiêu dùng</a></div>
+  <div class="foot-bottom"><a href="#">k bảo vệ quyền lợi người tiêu dùng</a></div>
 </footer>
 
 <script>
+  // hero: moving gallery.
+  const HERO_IMAGES = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg'];
+  (function buildGallery(){
+    const tilt = document.querySelector('.tilt');
+    const hero = document.querySelector('.hero');
+    const pal = [['#f4e8d2','#d9bf98'],['#cdbba6','#8d7a68'],['#ebdcd2','#b9a39a'],['#c9d3c6','#8fa08d'],
+                 ['#f2e0d9','#d3a9a1'],['#d9e5ed','#9db6c6'],['#e8dccb','#a8957d'],['#e0d0c4','#b08f7e']];
+    const H = [[380,300,420,340,360,400],[300,420,340,380,320,360],[420,340,300,400,380,320],[340,380,400,300,420,340]];
+    const dur = [80,96,72,90], delay = [-12,-46,-26,-60];
+    const need = hero.clientHeight * 1.9 + 400;
+    let k = 0;
+    for(let c = 0; c < 4; c++){
+      const col = document.createElement('div');
+      col.className = 'g-col' + (c % 2 ? ' down' : '');
+      const track = document.createElement('div');
+      track.className = 'g-track';
+      track.style.setProperty('--dur', dur[c] + 's');
+      track.style.setProperty('--delay', delay[c] + 's');
+      const heights = []; let sum = 0, i = 0;
+      while(sum < need){ const h = H[c][i++ % H[c].length]; heights.push(h); sum += h + 16; }
+      for(let r = 0; r < 2; r++) heights.forEach((h, j) => {      // two copies = seamless loop
+        const t = document.createElement('div');
+        t.className = 'g-tile'; t.style.setProperty('--h', h);
+        const n = c * 7 + j;
+        const imageIndex = c + (j % 2) * 4;
+        if(HERO_IMAGES.length) t.style.background = `url("${HERO_IMAGES[imageIndex]}") center/cover`;
+        else { const [a, b] = pal[n % pal.length];
+          t.style.background = `radial-gradient(circle at 30% 25%,rgba(255,255,255,.4),transparent 55%),linear-gradient(160deg,${a},${b})`; }
+        track.appendChild(t);
+      });
+      col.appendChild(track); tilt.appendChild(col);
+    }
+  })();
+
   // slide-in on scroll
   const io = new IntersectionObserver(entries => {
     entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
